@@ -114,8 +114,8 @@ function onCountryClick(e){
     $('.initiative_info').html(html);
 }
 
-$('.infobox4 select').on('change', function(e){
-  var id_disasters = $('.infobox4 select').val();
+$('.block-bottom-left table').click(function(e){
+  var id_disasters = $('.block-bottom-left table').val();
   if (id_disasters == "") return;
 
   // TODO: aller chercher quels pays il faut sélectionner
