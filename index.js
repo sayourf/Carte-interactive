@@ -1,16 +1,6 @@
-// TODO: pas réussi à connecter le target avec l'info dans le fichier json
-// But : 1) Lorsqu'on selectionne l'initiative ds dropdown list
-//          ça doit highlight les pays + donner description en bas du project
-// But : 2) Lorsqu'on clique sur les pays de la carte ça affiche les initiatives en lien avec le pays.
-
-// problème: "undefined" ddans la box...
-// Inclure dans la liste selectedCountries l'ID de tous les pays qu'on va utiliser par la suite. Possibilité de remplacer zoneofactiontest par
-// Zoneofaction (tout les pays) comme ça c'est déjà bon pour la suite.
-
-
 var selectedCountries = [];
-// var selectedCountriesGEODARMA = [];
-// var selectedCountriesGSNL = [];
+var selectedCountriesGEODARMA = [];
+var selectedCountriesGSNL = [];
 
 //settings de la carte
 var mymap = L.map("map").setView([30.524, 1], 1.2);
@@ -54,7 +44,6 @@ var countryLayer = L.geoJson(zoneofaction, {
 			click : onCountryClick,
 			mouseover : onCountryHighLight,
 			mouseout : onCountryMouseOut
-      // change : dropdown_onchange
 		});
 	}
 
@@ -80,24 +69,8 @@ function onCountryHighLight(e){
 //callback when mouse enters a country polygon goes here, for additional actions
 }
 
-// countryLayer = L.geoJson(zoneofaction, {
-//   pointToLayer: function(feature, latlng) {
-//     marker = L.marker(coordinates, zoneofaction);
-//     return marker;
-//   }
-// }).addTo(mymap);
-
-// var id_countries = zoneofaction.features.id;
-//
-// $('.infobox2 select').on('change', function(e){
-//   id_countries = $('.infobox2 select').val();
-//   if (id_countries == "") return;
-//   var
-// });
-
 function onCountryClick(e){
   //callback for clicking inside a polygon
-    //var disa = zoneofactiontest[id_disasters];
     var feat = e.target.feature;
     var html = '<table cellpadding="5">';
     html += '     <tr>';
@@ -114,18 +87,29 @@ function onCountryClick(e){
     $('.initiative_info').html(html);
 }
 
-$('.block-bottom-left table').click(function(e){
-  var id_disasters = $('.block-bottom-left table').val();
-  if (id_disasters == "") return;
+// $('.block-bottom-left td').on("click", function(e){
+//   var id_disasters = $('.block-bottom-left td').val();
+//   if (id_disasters == "") return;
+//
+//   // selectedCountries = ['AFG','AGO','ALB','ARE','ARG','ARM'];
+//   // updateCountryLayer();
+//   selectedCountriesGEODARMA = ['AFG','AGO'];
+//   updateCountryLayer();
+//   selectedCountriesGSNL = ['ALB','ARE','ARG','ARM']
+//
+// });
 
-  // TODO: aller chercher quels pays il faut sélectionner
+$(document).ready(function(){
+  $("button").click(function(){
+    var id_disasters = $('.block-bottom-left td').val();
+    if (id_disasters == "") return;
 
-  selectedCountries = ['AFG','AGO','ALB','ARE','ARG','ARM'];
-  updateCountryLayer();
-  // selectedCountriesGEODARMA = ['AFG','AGO'];
-  // updateCountryLayer();
-  // selectedCountriesGSNL = ['ALB','ARE','ARG','ARM']
-
+    // selectedCountries = ['AFG','AGO','ALB','ARE','ARG','ARM'];
+    // updateCountryLayer();
+    selectedCountriesGEODARMA = ['AFG','AGO'];
+    updateCountryLayer();
+    selectedCountriesGSNL = ['ALB','ARE','ARG','ARM']
+  });
 });
 
 
