@@ -72,7 +72,20 @@ function onCountryHighLight(e){
 function onCountryClick(e){
   //callback for clicking inside a polygon
     var feat = e.target.feature;
-    var html = '<table cellpadding="5">';
+    var html = '';
+
+    // in case there is no iniative in a country, display a message
+    // instead of a undefined table
+    if (typeof(feat.properties.nomactivite) == 'undefined') {
+      html = '<p>No initiative found for ' + feat.properties.name + '.</p>';
+      $('.initiative_info').html(html);
+      return;
+    }
+
+    // Display the initatives in the country:
+    // *** TODO ***: Is it possible to have more than one initative in a country?
+    //               Create a loop in this case...
+    html = '<table cellpadding="5">';
     html += '     <tr>';
     html += '       <td><b>Name:</b></td>';
     html += '       <td><b>Description:</b></td>';
