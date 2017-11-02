@@ -104,3 +104,10 @@ body {
   width: 40px;
   height: 20px;
 }
+
+.activity-type {
+  cursor: pointer;
+}
+.activity-type.active {
+  background-color: #ffe0e0;
+}

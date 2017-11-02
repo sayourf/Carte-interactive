@@ -1,6 +1,10 @@
-var selectedCountries = [];
-var selectedCountriesGEODARMA = [];
-var selectedCountriesGSNL = [];
+
+// Les critères de sélection pour les pays.
+// Nous enregistrons seulement les critères, et non pas la liste des pays.
+// Puis dans la fonction de style, nous utilisons ces critères pour décider
+// si on affiche ou non un pays.
+// Un dictionnaire vide veut dire qu'il n'y a pas de sélection.
+var selection = {};
 
 //settings de la carte
 var mymap = L.map("map").setView([30.524, 1], 1.2);
@@ -24,14 +28,37 @@ L.control.scale({imperial:false, position: 'bottomleft'}).addTo(mymap);
 
 //Highlight gris des polygones en passant la souris
 function countryLayerStyleFn(feature) {
-  var selectedCountry = (selectedCountries.indexOf(feature.id) > -1);
-		return {
-			fillColor: selectedCountry ? '#ff0000' : "#E3E3E3",
-			weight: 1,
-			opacity: 0.4,
-			color: 'white',
-			fillOpacity: selectedCountry ? 0.7 : 0.3
-		};
+  var selectedCountry = countryIsSelected(feature);
+	return {
+		fillColor: selectedCountry ? '#ff0000' : "#E3E3E3",
+		weight: 1,
+		opacity: 0.4,
+		color: 'white',
+		fillOpacity: selectedCountry ? 0.7 : 0.3
+	};
+}
+
+function anyFilterIsActive(){
+  if (selection['activity-type']) return true;
+  return false;
+}
+
+function countryIsSelected(feature) {
+  // If no filter, define the country as selected if there is an activity inside.
+  if (anyFilterIsActive() == false) {
+    return (typeof(feature.properties.accronym) != 'undefined');
+  }
+
+  // We have filters active; apply them.
+  if (
+    selection['activity-type'] && 
+    selection['activity-type'] == feature.properties.accronym
+  ) {
+    return true;
+  }
+
+  // Par défaut, on retourne false
+  return false;
 }
 
 var countryLayer = L.geoJson(zoneofaction, {
@@ -39,16 +66,16 @@ var countryLayer = L.geoJson(zoneofaction, {
 		style : countryLayerStyleFn
 	}).addTo(mymap);
 
-	function onEachFeature(feature, layer){
-		layer.on({
-			click : onCountryClick,
-			mouseover : onCountryHighLight,
-			mouseout : onCountryMouseOut
-		});
-	}
+function onEachFeature(feature, layer){
+	layer.on({
+		click : onCountryClick,
+		mouseover : onCountryHighLight,
+		mouseout : onCountryMouseOut
+	});
+}
 
 function onCountryMouseOut(e){
-  	countryLayer.resetStyle(e.target);
+  countryLayer.resetStyle(e.target);
 }
 
 function onCountryHighLight(e){
@@ -100,28 +127,29 @@ function onCountryClick(e){
     $('.initiative_info').html(html);
 }
 
-// $('.block-bottom-left td').on("click", function(e){
-//   var id_disasters = $('.block-bottom-left td').val();
-//   if (id_disasters == "") return;
-//
-//   // selectedCountries = ['AFG','AGO','ALB','ARE','ARG','ARM'];
-//   // updateCountryLayer();
-//   selectedCountriesGEODARMA = ['AFG','AGO'];
-//   updateCountryLayer();
-//   selectedCountriesGSNL = ['ALB','ARE','ARG','ARM']
-//
-// });
-
 $(document).ready(function(){
-  $("button").click(function(){
-    var id_disasters = $('.block-bottom-left td').val();
-    if (id_disasters == "") return;
+  $(".activity-type").on('click', function(e){
 
-    // selectedCountries = ['AFG','AGO','ALB','ARE','ARG','ARM'];
-    // updateCountryLayer();
-    selectedCountriesGEODARMA = ['AFG','AGO'];
+    // Désactiver le bouton s'il est activé:
+    if ($(e.target).hasClass('active')) {
+      $(e.target).removeClass('active');
+      selection['activity-type'] = null;
+      updateCountryLayer();
+      return;
+    }
+
+    // Afficher que l'activité actuelle est active
+    $('.activity-type').removeClass('active');
+    $(e.target).addClass('active');
+
+    // Extraire le type d'activité du "bouton" cliqué.
+    var activityType = $(e.target).attr('data-accronym');
+
+    // Définir le critère de sélection qui est utiliser pour dessiner les pays plus tard.
+    selection['activity-type'] = activityType;
+
+    // Redessiner la couche des pays.
     updateCountryLayer();
-    selectedCountriesGSNL = ['ALB','ARE','ARG','ARM']
   });
 });
 
